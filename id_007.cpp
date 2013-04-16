@@ -9,7 +9,7 @@ primes_t::value_type next_prime(primes_t &primes)
 	primes_t::value_type x;
 	for(x = primes.back() + 2;
 	    std::find_if(primes.begin(), primes.end(),
-	                 [x](primes_t::value_type p) { return x % p == 0; })
+	                 [x](primes_t::value_type p) { return (p * 2 <= x) && (x % p == 0); })
 	    != primes.end();
 	    x += 2)
 	{
