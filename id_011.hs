@@ -33,7 +33,7 @@ vertical4s :: [[Int]] -> [[Int]]
 vertical4s = horizontal4s . transpose
 
 diag4s :: [[Int]] -> [[Int]]
-diag4s grid = concat  $ map diag4sSub $ take4s grid
+diag4s grid = concat $ map diag4sSub $ take4s grid
 
 diag4sSub :: [[Int]] -> [[Int]]
 diag4sSub [(w0:w1:w2:w3:ws), (_:x1:x2:x3:xs), (_:y1:y2:y3:ys), (_:z1:z2:z3:zs)]
