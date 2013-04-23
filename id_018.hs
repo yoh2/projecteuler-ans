@@ -44,7 +44,7 @@ triangleChain = (sharedLinkChain triangleIntList) !! 0
 
 maxPath :: (Ord a, Num a) => BinTree a -> a
 maxPath Null             = 0
-maxPath (Node (x, r, l)) = x + max (maxPath r) (maxPath l)
+maxPath (Node (x, l, r)) = x + max (maxPath l) (maxPath r)
 
 solution :: Int
 solution = maxPath triangleChain
