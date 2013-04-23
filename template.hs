@@ -1,5 +1,5 @@
-solution :: 
-solution = 
+answer :: 
+answer = 
 
 main :: IO ()
-main = print solution
+main = print answer
