@@ -17,7 +17,6 @@ divCycleLengthSub x y rs = case findIndex (==r) rs of
 
 
 answer :: Int
---answer = maximumBy (\x y -> compare (divCycleLength 1 x) (divCycleLength 1 y)) [1 .. 999]
 answer = fst $ maximumBy (\(_,x) (_,y) -> compare x y)
                          $ [(x,divCycleLength 1 x) | x <- [1 .. 999]]
 
