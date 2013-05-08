@@ -31,15 +31,23 @@ digitListToInt :: (Integral a) => [a] -> a
 digitListToInt = foldl1 (\x y -> x * 10 + y)
 
 intRotations :: (Integral a) => a -> [a]
-intRotations = (map digitListToInt) . rotations . intToDigitList
+--intRotations = (map digitListToInt) . rotations . intToDigitList
+-- 1の連続だけはローテーションが重複する可能性があるので特別扱い。
+-- (ちなみに、1だけからなる素数は、11の次は1111111111111111111まで存在しない。
+-- さらにその次は11111111111111111111111で割と近い)
+intRotations x = if and $ map (==1) digitList then [x]
+                 else map digitListToInt $ rotations digitList
+                 where
+                   digitList = intToDigitList x
 
--- 手抜きのため、ひとつのローテーションについて何度も判定しています。
--- 例えば、199, 919, 991について、それぞれについて[199, 919, 991]が
--- すべて素数リストに含まれるか否か3重に判定しています。
--- でも割と速いので別に問題ないかと。
+-- ローテーションのリストを作成した時に、先頭が最も小さな数になるリストだけを
+-- 判定対象にすることにより、同じローテーションのグループを重複して判定する
+-- ことを避けている。
 answer = length
-         $ filter (\x -> and $ map (flip member primesSet) $ intRotations x)
-                  primes
+         $ concat
+         $ filter (\xs -> and $ map (flip member primesSet) xs)
+         $ filter (\xs -> minimum xs == head xs)
+         $ map intRotations primes
          where
            n = 1000000
            primes = primesUntil (n - 1)
