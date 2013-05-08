@@ -1,20 +1,20 @@
--- 素数リスト生成はID 10 より。
--- ちょくちょく見掛ける
---   primes = 2 : sieve [3, 5..]
---   sieve (p:ps) = p : sieve [q | q <- ps, q `mod` p /= 0]
--- という実装より速いので。
+-- 素数の無限リスト。
+primes :: [Integer]
+primes = 2 :  filter (\x -> and $ map ((/= 0) . (mod x))
+                                $ takeWhile (\y -> y * y <= x) primes)
+                     [3, 5 ..]
 
-import Data.Set (Set, fromList, union, member)
+-- 素数判定。
+-- 末尾の 2 : [3, 5..] は、代わりにprimesを使うと、除数の数は減るが、
+-- primesが除算を内包しているためか、巨大な素数をTrueと判定する場合、
+-- かえって遅くなる傾向があるようだ。
+isPrime :: Integral a => a -> Bool
+isPrime x | x <= 1    = False
+          | otherwise = and $ map ((/= 0) . (mod x))
+                            $ takeWhile (\y -> y * y <= x) $ 2 : [3, 5..]
 
-updatePair :: Integer -> Integer -> (Set Integer, [Integer]) -> (Set Integer, [Integer])
-updatePair n x (nonPrimes, primes)
-  | x `member` nonPrimes = (union nonPrimes $ fromList [x, x * 2 .. n], primes)
-  | otherwise            = (union nonPrimes $ fromList [x * 2, x * 3 .. n], x:primes)
-
--- n以下の素数のリスト
-primesUntil :: Integer -> [Integer]
-primesUntil n = snd $ foldr (updatePair n) (fromList [], []) (reverse (2:[3, 5 .. n]))
-
+-- 元のリストを回転させたリストを得る。
+-- 先頭のリスト必ず元のリストになる。
 rotations :: [a] -> [[a]]
 rotations xs = rotateSub (length xs) xs
                where
@@ -22,15 +22,15 @@ rotations xs = rotateSub (length xs) xs
                  rotateSub n (x:xs) = (x:xs)
                                       : (rotateSub (n - 1) (xs ++ [x]))
 
-intToDigitList :: (Integral a) => a -> [a]
+intToDigitList :: Integral a => a -> [a]
 intToDigitList x = snd $ head $ dropWhile ((> 0) . fst)
                    $ iterate (\(x, xs) -> (x `div` 10, (x `mod` 10) : xs))
                              (x, [])
 
-digitListToInt :: (Integral a) => [a] -> a
+digitListToInt :: Integral a => [a] -> a
 digitListToInt = foldl1 (\x y -> x * 10 + y)
 
-intRotations :: (Integral a) => a -> [a]
+intRotations :: Integral a => a -> [a]
 --intRotations = (map digitListToInt) . rotations . intToDigitList
 -- 1の連続だけはローテーションが重複する可能性があるので特別扱い。
 -- (ちなみに、1だけからなる素数は、11の次は1111111111111111111まで存在しない。
@@ -43,15 +43,15 @@ intRotations x = if and $ map (==1) digitList then [x]
 -- ローテーションのリストを作成した時に、先頭が最も小さな数になるリストだけを
 -- 判定対象にすることにより、同じローテーションのグループを重複して判定する
 -- ことを避けている。
+answer :: Int
 answer = length
          $ concat
-         $ filter (\xs -> and $ map (flip member primesSet) xs)
+         $ filter (\xs -> and $ map isPrime xs)
          $ filter (\xs -> minimum xs == head xs)
-         $ map intRotations primes
+         $ map intRotations targetPrimes
          where
            n = 1000000
-           primes = primesUntil (n - 1)
-           primesSet = fromList primes
+           targetPrimes = takeWhile (< n) primes
 
 main :: IO ()
 main = print answer
