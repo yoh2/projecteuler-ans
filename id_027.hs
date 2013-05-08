@@ -1,7 +1,7 @@
 import Data.List (maximumBy)
 
+isPrime :: Integral a => a -> Bool
 isPrime x | x <= 1    = False
-          | x == 2    = True
           | otherwise = and $ map ((/= 0) . (mod x))
                             $ takeWhile (\n -> n * n <= x)
                             $ 2:[3,5..]
