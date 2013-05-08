@@ -43,10 +43,13 @@ intRotations x = if and $ map (==1) digitList then [x]
 -- ローテーションのリストを作成した時に、先頭が最も小さな数になるリストだけを
 -- 判定対象にすることにより、同じローテーションのグループを重複して判定する
 -- ことを避けている。
+-- このことと、intRotationsの結果の最初の数は指定した整数そのものになるという
+-- 性質により、最初のひとつは素数で確定しているので、ローテーションの
+-- すべてが素数か否か判定するには2番目以降を判定すればよい。
 answer :: Int
 answer = length
          $ concat
-         $ filter (\xs -> and $ map isPrime xs)
+         $ filter (\xs -> and $ map isPrime $ tail xs)
          $ filter (\xs -> minimum xs == head xs)
          $ map intRotations targetPrimes
          where
